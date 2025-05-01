@@ -21,8 +21,9 @@ Swiftheart-Succinct-ID-Creator
 
     .card {
       position: relative;
-      width: 800px;
-      height: 400px;
+      width: 100%;
+      max-width: 800px;
+      aspect-ratio: 2 / 1;
       border-radius: 30px;
       overflow: hidden;
       display: flex;
@@ -38,7 +39,7 @@ Swiftheart-Succinct-ID-Creator
       top: 20px;
       bottom: 20px;
       width: 45%;
-      background: url('./assets/my_logo.png') no-repeat center center;
+      background: url('succinct-logo.png') no-repeat center center;
       background-size: 80%;
       opacity: 0.08;
       z-index: 0;
@@ -46,7 +47,7 @@ Swiftheart-Succinct-ID-Creator
 
     .left-section {
       width: 60%;
-      padding: 40px;
+      padding: clamp(20px, 5vw, 40px);
       color: #000;
       position: relative;
       z-index: 1;
@@ -54,18 +55,18 @@ Swiftheart-Succinct-ID-Creator
 
     .left-section h2 {
       color: #e6007a;
-      font-size: 36px;
-      margin: 0 0 30px 0;
+      font-size: clamp(20px, 4vw, 36px);
+      margin: 0 0 clamp(15px, 3vw, 30px) 0;
     }
 
     .info-label {
-      font-size: 24px;
+      font-size: clamp(14px, 3vw, 24px);
       font-weight: bold;
     }
 
     .info-text {
-      font-size: 28px;
-      margin-bottom: 20px;
+      font-size: clamp(16px, 4vw, 28px);
+      margin-bottom: clamp(10px, 2vw, 20px);
       font-weight: normal;
     }
 
@@ -78,8 +79,8 @@ Swiftheart-Succinct-ID-Creator
     }
 
     #pfp {
-      width: 180px;
-      height: 180px;
+      width: clamp(100px, 20vw, 180px);
+      height: clamp(100px, 20vw, 180px);
       border-radius: 50%;
       border: 8px solid white;
       object-fit: cover;
@@ -87,7 +88,9 @@ Swiftheart-Succinct-ID-Creator
 
     .input-area {
       margin-top: 40px;
+      width: 100%;
       max-width: 500px;
+      padding: 0 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -164,7 +167,7 @@ Swiftheart-Succinct-ID-Creator
     function checkInputsFilled() {
       const nameFilled = nameInput.value.trim() !== '';
       const roleFilled = roleInput.value.trim() !== '';
-      const pfpFilled = pfp.src !== ''; // ✅ match first code logic
+      const pfpFilled = pfp.src !== '';
       if (nameFilled && roleFilled && pfpFilled) {
         downloadBtn.disabled = false;
         downloadBtn.classList.add('glow');
