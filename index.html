@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Succinct ID Card Creator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #fff5fa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .card {
+      position: relative;
+      width: 800px;
+      height: 400px;
+      border-radius: 30px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      background: linear-gradient(135deg, #ffffff 50%, #e6007a 50%);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      bottom: 20px;
+      width: 45%;
+      background: url('./assets/my_logo.png') no-repeat center center;
+      background-size: 80%;
+      opacity: 0.08;
+      z-index: 0;
+    }
+
+    .left-section {
+      width: 60%;
+      padding: 40px;
+      color: #000;
+      position: relative;
+      z-index: 1;
+    }
+
+    .left-section h2 {
+      color: #e6007a;
+      font-size: 36px;
+      margin: 0 0 30px 0;
+    }
+
+    .info-label {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .info-text {
+      font-size: 28px;
+      margin-bottom: 20px;
+      font-weight: normal;
+    }
+
+    .right-section {
+      width: 40%;
+      background: #e6007a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #pfp {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      border: 8px solid white;
+      object-fit: cover;
+    }
+
+    .input-area {
+      margin-top: 40px;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .input-area input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      margin-top: 10px;
+      font-size: 16px;
+      background: #e6007a;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #cc0069;
+    }
+
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .btn.glow {
+      box-shadow: 0 0 15px #e6007a;
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="id-card">
+    <div class="left-section">
+      <h2>Succinct</h2>
+      <div class="info-label">NAME</div>
+      <div class="info-text" id="display-name">Your Name</div>
+      <div class="info-label">ROLE</div>
+      <div class="info-text" id="display-role">Your Role</div>
+    </div>
+    <div class="right-section">
+      <img id="pfp" src="" alt="Profile Picture">
+    </div>
+  </div>
+
+  <div class="input-area">
+    <input type="text" id="name" placeholder="Enter your name or handle (e.g., _Swiftheart)">
+    <input type="text" id="role" placeholder="Enter your role (e.g., ZKPreacher)">
+    <input type="file" id="pfp-upload" accept="image/*">
+    <button class="btn" id="download-btn" onclick="downloadCard()" disabled>Download ID Card</button>
+    <button class="btn" id="share-btn" onclick="shareOnTwitter()" disabled>Share on Twitter</button>
+  </div>
+
+  <script>
+    const nameInput = document.getElementById('name');
+    const roleInput = document.getElementById('role');
+    const displayName = document.getElementById('display-name');
+    const displayRole = document.getElementById('display-role');
+    const pfpUpload = document.getElementById('pfp-upload');
+    const pfp = document.getElementById('pfp');
+    const downloadBtn = document.getElementById('download-btn');
+    const shareBtn = document.getElementById('share-btn');
+
+    function checkInputsFilled() {
+      const nameFilled = nameInput.value.trim() !== '';
+      const roleFilled = roleInput.value.trim() !== '';
+      const pfpFilled = pfp.src !== ''; // ✅ match first code logic
+      if (nameFilled && roleFilled && pfpFilled) {
+        downloadBtn.disabled = false;
+        downloadBtn.classList.add('glow');
+      } else {
+        downloadBtn.disabled = true;
+        downloadBtn.classList.remove('glow');
+      }
+    }
+
+    nameInput.addEventListener('input', () => {
+      displayName.textContent = nameInput.value || 'Your Name';
+      checkInputsFilled();
+    });
+
+    roleInput.addEventListener('input', () => {
+      displayRole.textContent = roleInput.value || 'Your Role';
+      checkInputsFilled();
+    });
+
+    pfpUpload.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        pfp.src = reader.result;
+        checkInputsFilled();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function downloadCard() {
+      html2canvas(document.getElementById('id-card'), { useCORS: true, scale: 2 }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'succinct_id_card.png';
+        link.href = canvas.toDataURL();
+        link.click();
+        shareBtn.disabled = false;
+      });
+    }
+
+    function shareOnTwitter() {
+      const tweetText = encodeURIComponent("Just made my Succinct ID Card! 💖\n\nCreate yours here using @_Swiftheart's Succinct ID Creator and show off your Prover style!\n\nSwiftheart-Succinct-ID-Creator.vercel.app\n\n@0xCrashout @SuccinctLabs @Fakedev9999 @pumatheuma @nair_advaith @0xshalen @0xkeet @diednoreason @eliyyang @crlazeeee");
+      const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
+      window.open(twitterUrl, '_blank');
+    }
+  </script>
+</body>
+</html>
